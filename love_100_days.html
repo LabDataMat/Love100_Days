@@ -176,6 +176,41 @@ section{padding:100px 22px;position:relative}.section-inner{max-width:980px;marg
 }
 </style>
 <style>
+/* 1. 修复点开照片后全屏弹窗（Lightbox）长文字无法下拉查看的问题 */
+.lightbox.show {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding: 64px 20px 44px !important;
+}
+.lightbox img {
+  max-width: min(92vw, 680px) !important;
+  max-height: 62vh !important;
+  width: auto !important;
+  height: auto !important;
+  flex-shrink: 0 !important;
+}
+.lightbox p {
+  width: 100% !important;
+  max-width: min(92vw, 640px) !important;
+  text-align: center !important;
+  line-height: 1.85 !important;
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+  margin: 18px auto 0 !important;
+  flex-shrink: 0 !important;
+}
+.lightbox-close {
+  position: fixed !important;
+  right: 18px !important;
+  top: 14px !important;
+  z-index: 65 !important;
+}
+
+/* 2. 手机端相册单列大图排版与最后一张照片显示修复 */
 @media screen and (max-width: 768px) {
   html, body {
     width: 100% !important;
@@ -184,7 +219,6 @@ section{padding:100px 22px;position:relative}.section-inner{max-width:980px;marg
     overflow-y: auto !important;
     height: auto !important;
   }
-  /* 1. 解除手机端隐藏最后一张照片的限制，改为单列大图展示，彻底解决文字看不全 */
   .photos {
     display: flex !important;
     flex-direction: column !important;
@@ -201,7 +235,6 @@ section{padding:100px 22px;position:relative}.section-inner{max-width:980px;marg
   .photo:last-child {
     display: block !important;
   }
-  /* 2. 保持相框 4:5 比例与图片绝对定位铺满，不被全局 img 样式破坏 */
   .photo-frame {
     position: relative !important;
     width: 100% !important;
@@ -215,7 +248,6 @@ section{padding:100px 22px;position:relative}.section-inner{max-width:980px;marg
     height: 100% !important;
     object-fit: cover !important;
   }
-  /* 3. 确保日期和长文字描述完整换行、不被裁剪 */
   .photo-date, .photo-caption {
     display: block !important;
     width: 100% !important;
