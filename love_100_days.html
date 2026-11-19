@@ -176,41 +176,49 @@ section{padding:100px 22px;position:relative}.section-inner{max-width:980px;marg
 }
 </style>
 <style>
-/* 1. 修复点开照片后全屏弹窗（Lightbox）长文字无法下拉查看的问题 */
+/* 1. 修复点开照片后全屏预览弹窗（Lightbox）长文字无法下拉查看的问题 */
 .lightbox.show {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  overflow-y: auto !important;
+  display: block !important;
+  position: fixed !important;
+  inset: 0 !important;
+  overflow-y: scroll !important;
   -webkit-overflow-scrolling: touch !important;
-  padding: 64px 20px 44px !important;
+  padding: 60px 18px 80px !important;
+  text-align: center !important;
 }
 .lightbox img {
-  max-width: min(92vw, 680px) !important;
-  max-height: 62vh !important;
+  display: block !important;
+  margin: 0 auto !important;
+  max-width: 90vw !important;
+  max-height: 50vh !important;
   width: auto !important;
   height: auto !important;
-  flex-shrink: 0 !important;
 }
 .lightbox p {
+  display: block !important;
   width: 100% !important;
-  max-width: min(92vw, 640px) !important;
-  text-align: center !important;
+  max-width: 90vw !important;
+  margin: 16px auto 0 !important;
+  text-align: left !important;
+  font-style: normal !important;
+  font-size: 15px !important;
   line-height: 1.85 !important;
   white-space: pre-wrap !important;
   word-break: break-word !important;
-  margin: 18px auto 0 !important;
-  flex-shrink: 0 !important;
 }
 .lightbox-close {
   position: fixed !important;
-  right: 18px !important;
-  top: 14px !important;
-  z-index: 65 !important;
+  right: 16px !important;
+  top: 12px !important;
+  z-index: 99 !important;
+  background: rgba(0, 0, 0, 0.35) !important;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  line-height: 34px !important;
 }
 
-/* 2. 手机端相册单列大图排版与最后一张照片显示修复 */
+/* 2. 修复手机端相册两列挤压、最后一张照片被隐藏、文字被截断的问题 */
 @media screen and (max-width: 768px) {
   html, body {
     width: 100% !important;
