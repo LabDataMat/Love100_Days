@@ -183,22 +183,55 @@ section{padding:100px 22px;position:relative}.section-inner{max-width:980px;marg
     overflow-x: hidden !important;
     overflow-y: auto !important;
     height: auto !important;
-    min-height: 100vh !important;
   }
-  * {
-    box-sizing: border-box !important;
-    max-width: 100% !important;
+  /* 1. 解除手机端隐藏最后一张照片的限制，改为单列大图展示，彻底解决文字看不全 */
+  .photos {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 22px !important;
   }
-  img {
+  .photo {
+    display: block !important;
+    width: 100% !important;
     height: auto !important;
+    transform: none !important;
+    padding: 12px 12px 20px !important;
+    overflow: visible !important;
+  }
+  .photo:last-child {
+    display: block !important;
+  }
+  /* 2. 保持相框 4:5 比例与图片绝对定位铺满，不被全局 img 样式破坏 */
+  .photo-frame {
+    position: relative !important;
+    width: 100% !important;
+    aspect-ratio: 4 / 5 !important;
+    overflow: hidden !important;
+  }
+  .photo-frame img {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
     object-fit: cover !important;
   }
-  .container, .card, .wrapper, .content, .gallery, .photo-grid {
-    width: 94% !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    padding-left: 12px !important;
-    padding-right: 12px !important;
+  /* 3. 确保日期和长文字描述完整换行、不被裁剪 */
+  .photo-date, .photo-caption {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    text-overflow: unset !important;
+    -webkit-line-clamp: unset !important;
+  }
+  .photo-caption {
+    font-size: 14px !important;
+    line-height: 1.8 !important;
+    margin-top: 8px !important;
+    padding: 0 6px !important;
   }
 }
 </style>
