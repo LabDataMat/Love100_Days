@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#fff6f4">
+<title>回忆照片管理 · Love 100</title>
+<style>
+:root{--cream:#fff9f5;--pink:#f8dce1;--rose:#c77f91;--deep:#875766;--ink:#765b61;--muted:#ad9296;--line:#efdde0}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#fffaf6,#fff0f1);color:var(--ink);font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;min-height:100vh;padding:34px 16px}
+main{width:min(760px,100%);margin:auto}.eyebrow{text-align:center;font:italic 13px Georgia,serif;letter-spacing:.2em;color:#c18e98}
+h1{text-align:center;font:400 clamp(28px,5vw,40px) "Songti SC",serif;color:#956b76;margin:12px 0}
+.sub{text-align:center;color:#b39a9e;font-size:13px;line-height:1.9;margin:0 auto 28px}
+.panel{background:rgba(255,255,255,.82);border:1px solid var(--line);border-radius:20px;padding:clamp(18px,4vw,30px);box-shadow:0 15px 45px #a86f7910;margin:18px 0}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.btn{border:1px solid #d9b3ba;border-radius:28px;padding:11px 20px;background:#fffaf8;color:#a87983;font-size:13px;cursor:pointer}.btn.primary{background:linear-gradient(135deg,#dca6b0,#c98596);border-color:transparent;color:white}.btn:disabled{opacity:.45;cursor:not-allowed}
+.status{font-size:12px;line-height:1.8;color:#a9878e;margin:12px 0 0}.status.error{color:#b34f66}.status.ok{color:#628d75}
+label{display:block;font-size:12px;color:#a8838b;margin:16px 0 7px}
+input[type=date],input[type=text],textarea{width:100%;border:1px solid #e9d2d5;border-radius:12px;padding:12px 14px;background:#fffdfb;color:#765b61;font:inherit;font-size:14px;outline:none}
+textarea{min-height:94px;resize:vertical;line-height:1.7}input:focus,textarea:focus{border-color:#cb9aa4;box-shadow:0 0 0 3px #f5e4e7}
+.filebox{border:1px dashed #dfbdc4;border-radius:15px;padding:18px;text-align:center;background:#fffaf9;color:#ad858e;font-size:13px}
+.filebox input{display:block;margin:12px auto 0;max-width:100%}
+.preview{display:none;max-width:180px;max-height:220px;object-fit:cover;border-radius:10px;margin:14px auto 0;box-shadow:0 7px 20px #8f59651a}
+.help{font-size:11px;color:#b59a9e;line-height:1.8;margin-top:8px}
+.list{display:grid;gap:12px}.item{display:grid;grid-template-columns:78px 1fr;gap:14px;align-items:center;padding:12px;border:1px solid #f0e2e3;border-radius:14px;background:#fffdfb}
+.item img{width:78px;height:92px;object-fit:cover;border-radius:8px;background:#f8e8e7}.item strong{display:block;color:#966e78;font-size:13px;font-weight:500}.item small{display:block;color:#b59a9e;margin-top:5px;font-size:11px;overflow-wrap:anywhere}.empty{text-align:center;padding:24px;color:#b99ba0;font-size:13px}
+footer{text-align:center;color:#c09ba2;font:italic 12px Georgia,serif;padding:22px}
+@media(max-width:480px){body{padding:24px 12px}.item{grid-template-columns:64px 1fr}.item img{width:64px;height:78px}.row .btn{flex:1}}
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">A LITTLE ARCHIVE OF US</div>
+  <h1>回忆照片管理</h1>
+  <p class="sub">选择你电脑上的恋爱纪念网站项目文件夹。<br>添加照片后，系统会自动编号、保存图片并更新相册数据。</p>
+
+  <section class="panel">
+    <div class="row">
+      <button class="btn primary" id="chooseFolder">① 选择网站项目文件夹</button>
+      <span id="folderName" class="status">尚未选择文件夹</span>
+    </div>
+    <p class="help">请选择包含 <b>love_100_days.html</b> 的项目根目录，而不是 images 文件夹。</p>
+    <p id="folderStatus" class="status" role="status"></p>
+  </section>
+
+  <section class="panel">
+    <h2 style="font:400 21px 'Songti SC',serif;color:#956b76;margin:0">添加一份新回忆</h2>
+    <label for="memoryDate">回忆日期（可留空）</label>
+    <input id="memoryDate" type="date">
+    <label for="memoryDescription">回忆描述</label>
+    <textarea id="memoryDescription" maxlength="500" placeholder="写下这张照片背后的故事……"></textarea>
+    <label>选择照片</label>
+    <div class="filebox">
+      选择一张 JPG、PNG、WebP、GIF 或 AVIF 图片
+      <input id="memoryFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif">
+      <img id="preview" class="preview" alt="照片预览">
+      <div id="fileInfo" class="help">建议单张照片控制在 1–2 MB，方便网页加载。</div>
+    </div>
+    <div class="row" style="margin-top:18px">
+      <button class="btn primary" id="saveMemory" disabled>② 保存这份回忆</button>
+      <button class="btn" id="refreshList" disabled>刷新列表</button>
+    </div>
+    <p id="saveStatus" class="status" role="status"></p>
+  </section>
+
+  <section class="panel">
+    <h2 style="font:400 21px 'Songti SC',serif;color:#956b76;margin:0 0 16px">已经收藏的回忆</h2>
+    <div id="memoryList" class="list"><div class="empty">请先选择网站项目文件夹</div></div>
+  </section>
+  <footer>MADE WITH LOVE · PRIVATE LOCAL TOOL</footer>
+</main>
+<script>
+const chooseFolderBtn=document.getElementById('chooseFolder');
+const saveBtn=document.getElementById('saveMemory');
+const refreshBtn=document.getElementById('refreshList');
+const folderName=document.getElementById('folderName');
+const folderStatus=document.getElementById('folderStatus');
+const saveStatus=document.getElementById('saveStatus');
+const fileInput=document.getElementById('memoryFile');
+const preview=document.getElementById('preview');
+const fileInfo=document.getElementById('fileInfo');
+const memoryList=document.getElementById('memoryList');
+let rootHandle=null, memories=[], selectedFile=null;
+
+function status(el,message,type=''){el.textContent=message;el.className='status '+type;}
+function sortItems(items){
+  return [...items].sort((a,b)=>{
+    if(!a.date&&!b.date)return a.id-b.id;
+    if(!a.date)return 1;if(!b.date)return -1;
+    return a.date.localeCompare(b.date)||a.id-b.id;
+  });
+}
+function safeExt(file){
+  const ext=(file.name.split('.').pop()||'').toLowerCase();
+  const allowed=['jpg','jpeg','png','webp','gif','avif'];
+  if(allowed.includes(ext))return ext==='jpeg'?'jpg':ext;
+  const byType={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif','image/avif':'avif'};
+  return byType[file.type]||null;
+}
+async function readManifest(){
+  const handle=await rootHandle.getFileHandle('memories.json',{create:true});
+  const file=await handle.getFile();
+  if(!file.size){memories=[];return;}
+  const parsed=JSON.parse(await file.text());
+  if(!Array.isArray(parsed))throw new Error('memories.json 格式错误：根数据必须是数组');
+  memories=parsed;
+}
+async function writeManifest(){
+  const handle=await rootHandle.getFileHandle('memories.json',{create:true});
+  const writable=await handle.createWritable();
+  await writable.write(JSON.stringify(sortItems(memories),null,2)+'\n');
+  await writable.close();
+}
+function renderList(){
+  memoryList.innerHTML='';
+  const sorted=sortItems(memories);
+  if(!sorted.length){memoryList.innerHTML='<div class="empty">还没有添加照片，第一份回忆等你来收藏。♡</div>';return;}
+  for(const item of sorted){
+    const row=document.createElement('div');row.className='item';
+    const img=document.createElement('img');img.src='./'+item.image.replace(/^\.\//,'');img.alt='';
+    const info=document.createElement('div');
+    const title=document.createElement('strong');title.textContent=item.description||'未填写描述';
+    const meta=document.createElement('small');meta.textContent=(item.date||'日期待补充')+' · '+item.image;
+    info.append(title,meta);row.append(img,info);memoryList.appendChild(row);
+  }
+}
+async function connectFolder(){
+  if(!window.showDirectoryPicker){
+    status(folderStatus,'当前浏览器不支持文件夹写入 API。请使用最新版 Chrome 或 Edge，并通过 localhost 打开 admin.html。','error');return;
+  }
+  try{
+    rootHandle=await window.showDirectoryPicker({id:'love100-project',mode:'readwrite'});
+    // Basic guard: verify the selected folder is the website project root.
+    try{await rootHandle.getFileHandle('love_100_days.html');}
+    catch{rootHandle=null;status(folderStatus,'所选文件夹中没有找到 love_100_days.html。请重新选择网站项目根目录。','error');return;}
+    await readManifest();
+    folderName.textContent='已连接：'+rootHandle.name;
+    status(folderStatus,'文件夹已连接。照片将保存到 images/memories/，数据写入 memories.json。','ok');
+    saveBtn.disabled=false;refreshBtn.disabled=false;renderList();
+  }catch(err){
+    if(err.name!=='AbortError')status(folderStatus,'无法访问文件夹：'+err.message,'error');
+  }
+}
+chooseFolderBtn.addEventListener('click',connectFolder);
+refreshBtn.addEventListener('click',async()=>{try{await readManifest();renderList();status(saveStatus,'已重新读取 memories.json。','ok')}catch(e){status(saveStatus,e.message,'error')}});
+fileInput.addEventListener('change',()=>{
+  selectedFile=fileInput.files?.[0]||null;
+  if(!selectedFile){preview.style.display='none';fileInfo.textContent='建议单张照片控制在 1–2 MB，方便网页加载。';return;}
+  const url=URL.createObjectURL(selectedFile);preview.src=url;preview.style.display='block';
+  fileInfo.textContent=selectedFile.name+' · '+(selectedFile.size/1024/1024).toFixed(2)+' MB';
+});
+saveBtn.addEventListener('click',async()=>{
+  if(!rootHandle){status(saveStatus,'请先选择网站项目文件夹。','error');return;}
+  if(!selectedFile){status(saveStatus,'请先选择一张照片。','error');return;}
+  const description=document.getElementById('memoryDescription').value.trim();
+  if(!description){status(saveStatus,'请填写这张照片的回忆描述。','error');return;}
+  const ext=safeExt(selectedFile);
+  if(!ext){status(saveStatus,'不支持该图片格式，请使用 JPG、PNG、WebP、GIF 或 AVIF。','error');return;}
+  saveBtn.disabled=true;
+  let imageHandle=null;
+  try{
+    const imagesDir=await rootHandle.getDirectoryHandle('images',{create:true});
+    const memoriesDir=await imagesDir.getDirectoryHandle('memories',{create:true});
+    const nextId=memories.reduce((max,item)=>Math.max(max,Number(item.id)||0),0)+1;
+    const filename='memory_'+String(nextId).padStart(3,'0')+'.'+ext;
+    const imagePath='./images/memories/'+filename;
+    imageHandle=await memoriesDir.getFileHandle(filename,{create:true});
+    const writable=await imageHandle.createWritable();
+    await writable.write(selectedFile);
+    await writable.close();
+    const item={id:nextId,date:document.getElementById('memoryDate').value||'',image:imagePath,description};
+    memories.push(item);
+    try{await writeManifest();}
+    catch(err){memories=memories.filter(x=>x.id!==nextId);await memoriesDir.removeEntry(filename).catch(()=>{});throw err;}
+    renderList();
+    status(saveStatus,'保存成功：'+filename+'。记得把新增文件和 memories.json 一起提交并推送到 GitHub。','ok');
+    document.getElementById('memoryDate').value='';
+    document.getElementById('memoryDescription').value='';
+    fileInput.value='';selectedFile=null;preview.removeAttribute('src');preview.style.display='none';
+    fileInfo.textContent='建议单张照片控制在 1–2 MB，方便网页加载。';
+  }catch(err){status(saveStatus,'保存失败：'+err.message,'error');}
+  finally{saveBtn.disabled=false;}
+});
+</script>
+</body>
+</html>
